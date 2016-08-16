@@ -4,6 +4,6 @@ metadata:
   name: kube-lego
 data:
   # modify this to specify your address
-  lego.email: "herfray.fabien@gmail.com"
+  lego.email: "foo@bar.com"
   # configre letencrypt's production api
   lego.url: "https://acme-v01.api.letsencrypt.org/directory"
