@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: zipkin-cassandra
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: zipkin-cassandra
+    spec:
+      containers:
+      - name: zipkin-cassandra
+        image: openzipkin/zipkin-cassandra
+        ports:
+          - name: db
+            containerPort: 9042
+        volumeMounts:
+            - mountPath: /var/lib/cassandra
+              name: data
+      volumes:
+        - name: data
+          emptyDir: {}

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zipkin
+spec:
+  ports:
+  - name: www
+    port: 80
+    targetPort: www
+    protocol: TCP
+  selector:
+    app: zipkin

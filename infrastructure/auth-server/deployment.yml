@@ -12,13 +12,6 @@ spec:
       containers:
       - name: auth-server
         image: solher/auth-nginx-proxy-companion
-        livenessProbe:
-          httpGet:
-            path: /swagger
-            port: api
-            scheme: HTTP
-          initialDelaySeconds: 30
-          timeoutSeconds: 5
         ports:
           - name: api
             containerPort: 3000
