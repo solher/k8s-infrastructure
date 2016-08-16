@@ -2,7 +2,6 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: default-http-backend
-  namespace: ingress
 spec:
   replicas: 1
   template:
@@ -25,7 +24,8 @@ spec:
           initialDelaySeconds: 30
           timeoutSeconds: 5
         ports:
-        - containerPort: 8080
+          - name: www
+            containerPort: 8080
         resources:
           limits:
             cpu: 10m

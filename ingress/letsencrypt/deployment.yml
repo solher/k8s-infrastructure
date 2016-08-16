@@ -2,7 +2,6 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: kube-lego
-  namespace: ingress
 spec:
   replicas: 1
   template:

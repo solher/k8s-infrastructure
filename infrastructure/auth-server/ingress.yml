@@ -1,0 +1,12 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: auth-server
+spec:
+  rules:
+  - host: auth.minikube
+    http:
+      paths:
+      - backend:
+          serviceName: auth-server
+          servicePort: api

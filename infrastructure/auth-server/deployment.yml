@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: auth-server
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: auth-server
+    spec:
+      containers:
+      - name: auth-server
+        image: solher/auth-nginx-proxy-companion
+        livenessProbe:
+          httpGet:
+            path: /swagger
+            port: api
+            scheme: HTTP
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        ports:
+          - name: api
+            containerPort: 3000
+        env:
+          - name: GRANT_ALL
+            valueFrom:
+              configMapKeyRef:
+                name: auth-server
+                key: auth-server.grant-all
+        volumeMounts:
+          - mountPath: /var/lib/auth-nginx-proxy-companion
+            name: data
+      volumes:
+        - name: data
+          emptyDir: {}
