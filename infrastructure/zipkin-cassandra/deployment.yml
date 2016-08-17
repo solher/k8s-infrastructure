@@ -21,4 +21,5 @@ spec:
               name: data
       volumes:
         - name: data
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: zipkin-cassandra

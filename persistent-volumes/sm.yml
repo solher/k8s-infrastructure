@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: sm0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  capacity:
+    storage: 5Gi
+  hostPath:
+    path: /data/host-sm0
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: sm1
+spec:
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  capacity:
+    storage: 5Gi
+  hostPath:
+    path: /data/host-sm1

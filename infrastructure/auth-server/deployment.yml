@@ -27,4 +27,5 @@ spec:
             name: data
       volumes:
         - name: data
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: auth-server
