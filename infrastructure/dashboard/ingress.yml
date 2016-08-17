@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kubernetes-dashboard
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  tls:
+  - secretName: kubernetes-dashboard-tls
+    hosts:
+      - dashboard.minikube
+  rules:
+  - host: dashboard.minikube
+    http:
+      paths:
+      - backend:
+          serviceName: kubernetes-dashboard
+          servicePort: www
