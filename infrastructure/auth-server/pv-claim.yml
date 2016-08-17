@@ -2,6 +2,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: auth-server
+  namespace: infrastructure
   labels:
     app: auth-server
 spec:
