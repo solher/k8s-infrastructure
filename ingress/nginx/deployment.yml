@@ -1,31 +1,19 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: nginx-ingress-controller
+  name: nginx
   namespace: ingress
-  labels:
-    app: nginx-ingress-lb
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: nginx-ingress-lb
-        name: nginx-ingress-lb
+        app: nginx
     spec:
-      terminationGracePeriodSeconds: 60      
       containers:
       - image: gcr.io/google_containers/nginx-ingress-controller:0.8.2
-        name: nginx-ingress-lb
+        name: nginx
         imagePullPolicy: Always
-        livenessProbe:
-          httpGet:
-            path: /healthz
-            port: 10249
-            scheme: HTTP
-          initialDelaySeconds: 30
-          timeoutSeconds: 5
-        # use downward API
         env:
           - name: POD_NAME
             valueFrom:
@@ -35,14 +23,19 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 10249
+            scheme: HTTP
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
         ports:
         - containerPort: 80
-          hostPort: 80
         - containerPort: 443
-          hostPort: 443
         args:
         - /nginx-ingress-controller
-        - --default-backend-service=default/default-http-backend
+        - --default-backend-service=ingress/default-http-backend
         volumeMounts:
           - mountPath: /etc/nginx/template
             name: template
