@@ -2,6 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zipkin
+  namespace: infrastructure
+  labels:
+    app: zipkin
 spec:
   ports:
   - name: www

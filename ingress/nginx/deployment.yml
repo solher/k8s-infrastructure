@@ -2,14 +2,15 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: nginx-ingress-controller
+  namespace: ingress
   labels:
-    k8s-app: nginx-ingress-lb
+    app: nginx-ingress-lb
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        k8s-app: nginx-ingress-lb
+        app: nginx-ingress-lb
         name: nginx-ingress-lb
     spec:
       terminationGracePeriodSeconds: 60      
