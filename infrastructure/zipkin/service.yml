@@ -11,5 +11,9 @@ spec:
     port: 80
     targetPort: www
     protocol: TCP
+  - name: api
+    port: 9410
+    targetPort: api
+    protocol: TCP
   selector:
     app: zipkin
