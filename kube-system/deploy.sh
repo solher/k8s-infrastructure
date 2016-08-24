@@ -1,3 +1,4 @@
 #!/bin/bash
 
-kubectl apply -f dashboard
+# Dashboard
+../mo dashboard/ingress.mo.yml | kubectl apply -f -

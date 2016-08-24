@@ -10,12 +10,17 @@ spec:
       labels:
         app: auth-server
     spec:
+      nodeSelector:
+        auth: "true"
       containers:
       - name: auth-server
-        image: solher/auth-nginx-proxy-companion
+        image: solher/auth-nginx-proxy-companion:latest
         ports:
           - name: api
             containerPort: 3000
+        resources:
+          limits:
+            memory: 50Mi
         env:
           - name: GRANT_ALL
             valueFrom:

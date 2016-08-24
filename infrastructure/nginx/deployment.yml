@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: nginx
-  namespace: ingress
+  namespace: infrastructure
 spec:
   replicas: 1
   template:
@@ -10,6 +10,8 @@ spec:
       labels:
         app: nginx
     spec:
+      nodeSelector:
+        proxy: "true"
       containers:
       - image: gcr.io/google_containers/nginx-ingress-controller:0.8.2
         name: nginx
@@ -32,10 +34,12 @@ spec:
           timeoutSeconds: 5
         ports:
         - containerPort: 80
+          hostPort: 80
         - containerPort: 443
+          hostPort: 443
         args:
         - /nginx-ingress-controller
-        - --default-backend-service=ingress/default-http-backend
+        - --default-backend-service=infrastructure/default-http-backend
         volumeMounts:
           - mountPath: /etc/nginx/template
             name: template

@@ -1,23 +1,21 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: zipkin
-  namespace: infrastructure
-  labels:
-    app: zipkin
+  name: kubernetes-dashboard
+  namespace: kube-system
   annotations:
     kubernetes.io/tls-acme: "true"
     kubernetes.io/ingress.class: "nginx"
 spec:
   tls:
-  - secretName: zipkin-tls
+  - secretName: kubernetes-dashboard-tls
     hosts:
-      - {{ZIPKIN_HOSTNAME}}
+      - {{DASHBOARD_HOSTNAME}}
   rules:
-  - host: {{ZIPKIN_HOSTNAME}}
+  - host: {{DASHBOARD_HOSTNAME}}
     http:
       paths:
       - path: /
         backend:
-          serviceName: zipkin
-          servicePort: www
+          serviceName: kubernetes-dashboard
+          servicePort: 80

@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: zipkin
+  name: appdash
   namespace: infrastructure
   labels:
-    app: zipkin
+    app: appdash
 spec:
   ports:
   - name: www
@@ -12,8 +12,8 @@ spec:
     targetPort: www
     protocol: TCP
   - name: api
-    port: 9410
+    port: 7701
     targetPort: api
     protocol: TCP
   selector:
-    app: zipkin
+    app: appdash
