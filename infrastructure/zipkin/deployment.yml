@@ -10,14 +10,19 @@ spec:
       labels:
         app: zipkin
     spec:
+      nodeSelector:
+        instrumenting: "true"
       containers:
       - name: zipkin
-        image: openzipkin/zipkin
+        image: openzipkin/zipkin:latest
         ports:
           - name: www
             containerPort: 9411
           - name: api
             containerPort: 9410
+        resources:
+          limits:
+            memory: 50Mi
         env:
           - name: STORAGE_TYPE
             value: "cassandra"

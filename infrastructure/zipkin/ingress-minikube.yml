@@ -1,0 +1,17 @@
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: zipkin
+  namespace: infrastructure
+  labels:
+    app: zipkin
+spec:
+  rules:
+  - host: zipkin.minikube
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: zipkin
+          servicePort: www

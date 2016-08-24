@@ -12,11 +12,12 @@ spec:
   tls:
   - secretName: zipkin-tls
     hosts:
-      - zipkin.minikube
+      - {{ZIPKIN_HOSTNAME}}
   rules:
-  - host: zipkin.minikube
+  - host: {{ZIPKIN_HOSTNAME}}
     http:
       paths:
-      - backend:
+      - path: /
+        backend:
           serviceName: zipkin
           servicePort: www

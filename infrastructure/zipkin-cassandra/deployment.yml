@@ -10,12 +10,17 @@ spec:
       labels:
         app: zipkin-cassandra
     spec:
+      nodeSelector:
+        instrumenting: "true"
       containers:
       - name: zipkin-cassandra
-        image: openzipkin/zipkin-cassandra
+        image: openzipkin/zipkin-cassandra:latest
         ports:
           - name: db
             containerPort: 9042
+        resources:
+          limits:
+            memory: 500Mi
         volumeMounts:
             - mountPath: /var/lib/cassandra
               name: data
