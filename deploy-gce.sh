@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[[ $(kubectl get nodes -o name) != "node/minikubevm" ]] || { echo current target does not seems to be gce; exit 1; }
+[[ $(kubectl get nodes -o name) != "node/minikubevm" ]] || { echo current target is minikube; exit 1; }
 
 [[ -f gce.env ]] || { echo gce.env not found; exit 1; }
 ln -s -f gce.env .env
