@@ -1,0 +1,94 @@
+---
+version: 0.4
+
+env:
+  NAMESPACE: 'infrastructure'
+  SETUP_MO: 'mo=\"./mo --source=env/\$SUP_NETWORK.env\"'
+  MINIKUBE_EXPECTED: '[[ $(kubectl get nodes -o name) == \"node/minikubevm\" ]] || { echo current k8s target is not minikube; exit 1; }' 
+  GCE_EXPECTED: '[[ $(kubectl get nodes -o name) != \"node/minikubevm\" ]] || { echo current k8s target is not GCE; exit 1; }' 
+  APPLY_NAMESPACE: 'echo ''{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"name\":\"''\$NAMESPACE''\"}}'' | kubectl apply -f -'
+
+networks:
+  minikube:
+    hosts:
+      - localhost
+    env: 
+      CHECK_CONTEXT: $MINIKUBE_EXPECTED 
+      PREPARE: '
+        $APPLY_NAMESPACE;
+        kubectl label nodes minikubevm proxy=true infrastructure=true auth=true default=true staging=true production=true --overwrite;
+      '
+  gce:
+    hosts:
+      - localhost
+    env: 
+      CHECK_CONTEXT: $GCE_EXPECTED 
+      PREPARE: $APPLY_NAMESPACE
+
+commands:
+  prepare:
+    desc: Prepare the environment.
+    run: eval $CHECK_CONTEXT; eval $PREPARE
+
+  volumes:
+    desc: Deploy persistent volumes.
+    run: >
+      eval $CHECK_CONTEXT;
+        kubectl apply -f persistent-volumes/sm-$SUP_NETWORK.yml;
+
+  dashboard:
+    desc: Deploy the Kubernetes dashboard.
+    run: >
+      eval $CHECK_CONTEXT; eval $SETUP_MO;
+        $mo dashboard/ingress.mo.yml | kubectl apply -f -;
+
+  nginx:
+    desc: Deploy Nginx.
+    run: >
+      eval $CHECK_CONTEXT;
+        kubectl create configmap nginx --from-file=nginx/nginx.tmpl --dry-run -o yaml | kubectl --namespace=$NAMESPACE apply -f -;
+        kubectl apply -f nginx;
+
+  default-backend:
+    desc: Deploy the ingress default backend.
+    run: >
+      eval $CHECK_CONTEXT;
+        kubectl apply -f default-backend;
+
+  letsencrypt:
+    desc: Deploy Letsencrypt.
+    run: >
+      eval $CHECK_CONTEXT; eval $SETUP_MO;
+        [[ -f letsencrypt/configmap-$SUP_NETWORK.mo.yml ]] || exit 0;
+        $mo letsencrypt/configmap-$SUP_NETWORK.mo.yml | kubectl apply -f -;
+        [[ -f letsencrypt/deployment-$SUP_NETWORK.yml ]] || exit 0;
+        kubectl apply -f letsencrypt/deployment-$SUP_NETWORK.yml;
+
+  auth-server:
+    desc: Deploy the auth server.
+    run: >
+      eval $CHECK_CONTEXT; eval $SETUP_MO;
+        kubectl apply -f auth-server/configmap.yml;
+        kubectl apply -f auth-server/deployment.yml;
+        $mo auth-server/ingress.mo.yml | kubectl apply -f -;
+        kubectl apply -f auth-server/pv-claim.yml;
+        kubectl apply -f auth-server/service.yml;
+
+  appdash:
+    desc: Deploy Appdash.
+    run: >
+      eval $CHECK_CONTEXT; eval $SETUP_MO;
+        $mo appdash/deployment.mo.yml | kubectl apply -f -;
+        $mo appdash/ingress.mo.yml | kubectl apply -f -;
+        kubectl apply -f appdash/service.yml;
+
+targets:
+  deploy:
+    - prepare
+    - volumes
+    - dashboard
+    - nginx
+    - default-backend
+    - letsencrypt
+    - auth-server
+    - appdash
