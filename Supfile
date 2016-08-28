@@ -16,7 +16,7 @@ networks:
       CHECK_CONTEXT: $MINIKUBE_EXPECTED 
       PREPARE: '
         $APPLY_NAMESPACE;
-        kubectl label nodes minikubevm proxy=true infrastructure=true auth=true default=true staging=true production=true --overwrite;
+        kubectl label nodes minikubevm proxy=true infrastructure=true auth=true default=true --overwrite;
       '
   gce:
     hosts:
