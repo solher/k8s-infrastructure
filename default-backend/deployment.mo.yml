@@ -5,6 +5,7 @@ metadata:
   namespace: infrastructure
 spec:
   replicas: 1
+  revisionHistoryLimit: {{DEFAULT_HISTORY_LIMIT}}
   template:
     metadata:
       labels:

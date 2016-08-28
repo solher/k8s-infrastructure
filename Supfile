@@ -45,15 +45,16 @@ commands:
   nginx:
     desc: Deploy Nginx.
     run: >
-      eval $CHECK_CONTEXT;
+      eval $CHECK_CONTEXT; eval $SETUP_MO;
         kubectl create configmap nginx --from-file=nginx/nginx.tmpl --dry-run -o yaml | kubectl --namespace=$NAMESPACE apply -f -;
-        kubectl apply -f nginx;
+        $mo nginx/deployment.mo.yml | kubectl apply -f -;
 
   default-backend:
     desc: Deploy the ingress default backend.
     run: >
-      eval $CHECK_CONTEXT;
-        kubectl apply -f default-backend;
+      eval $CHECK_CONTEXT; eval $SETUP_MO;
+        $mo default-backend/deployment.mo.yml | kubectl apply -f -;
+        kubectl apply -f default-backend/service.yml;
 
   letsencrypt:
     desc: Deploy Letsencrypt.
@@ -62,14 +63,14 @@ commands:
         [[ -f letsencrypt/configmap-$SUP_NETWORK.mo.yml ]] || exit 0;
         $mo letsencrypt/configmap-$SUP_NETWORK.mo.yml | kubectl apply -f -;
         [[ -f letsencrypt/deployment-$SUP_NETWORK.yml ]] || exit 0;
-        kubectl apply -f letsencrypt/deployment-$SUP_NETWORK.yml;
+        $mo letsencrypt/deployment-$SUP_NETWORK.mo.yml | kubectl apply -f -;
 
   auth-server:
     desc: Deploy the auth server.
     run: >
       eval $CHECK_CONTEXT; eval $SETUP_MO;
         kubectl apply -f auth-server/configmap.yml;
-        kubectl apply -f auth-server/deployment.yml;
+        $mo auth-server/deployment.mo.yml | kubectl apply -f -;
         $mo auth-server/ingress.mo.yml | kubectl apply -f -;
         kubectl apply -f auth-server/pv-claim.yml;
         kubectl apply -f auth-server/service.yml;
