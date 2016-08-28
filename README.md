@@ -1,2 +1,2 @@
-# kube-basic
-Basic Kubernetes configuration
+# k8s-infrastructure
+A Kubernetes infrastructure server
