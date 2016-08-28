@@ -21,7 +21,7 @@ spec:
             containerPort: 3000
         resources:
           limits:
-            memory: 50Mi
+            memory: 100Mi
         env:
           - name: GRANT_ALL
             valueFrom:
