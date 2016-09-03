@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: appdash
+  name: zipkin
   namespace: infrastructure
 spec:
   replicas: 1
@@ -9,22 +9,21 @@ spec:
   template:
     metadata:
       labels:
-        app: appdash
+        app: zipkin
     spec:
       nodeSelector:
         infrastructure: "true"
       containers:
-      - name: appdash
-        image: solher/appdash:latest
-        command:
-          - "appdash"
-          - "serve"
-          - "--url={{APPDASH_SCHEMA}}://{{APPDASH_HOSTNAME}}"
+      - name: zipkin
+        image: openzipkin/zipkin:1.8.1
         ports:
           - name: www
-            containerPort: 7700
+            containerPort: 9411
           - name: api
-            containerPort: 7701
+            containerPort: 9410
+        env:
+          - name: JAVA_OPTS
+            value: -Djava.security.egd=file:/dev/./urandom -Xms32m -Xmx32m
         resources:
           limits:
-            memory: 50Mi
+            memory: 200Mi

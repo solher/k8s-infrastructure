@@ -62,7 +62,7 @@ commands:
       eval $CHECK_CONTEXT; eval $SETUP_MO;
         [[ -f letsencrypt/configmap-$SUP_NETWORK.mo.yml ]] || exit 0;
         $mo letsencrypt/configmap-$SUP_NETWORK.mo.yml | kubectl apply -f -;
-        [[ -f letsencrypt/deployment-$SUP_NETWORK.yml ]] || exit 0;
+        [[ -f letsencrypt/deployment-$SUP_NETWORK.mo.yml ]] || exit 0;
         $mo letsencrypt/deployment-$SUP_NETWORK.mo.yml | kubectl apply -f -;
 
   auth-server:
@@ -75,13 +75,13 @@ commands:
         kubectl apply -f auth-server/pv-claim.yml;
         kubectl apply -f auth-server/service.yml;
 
-  appdash:
-    desc: Deploy Appdash.
+  zipkin:
+    desc: Deploy Zipkin.
     run: >
       eval $CHECK_CONTEXT; eval $SETUP_MO;
-        $mo appdash/deployment.mo.yml | kubectl apply -f -;
-        $mo appdash/ingress.mo.yml | kubectl apply -f -;
-        kubectl apply -f appdash/service.yml;
+        $mo zipkin/deployment.mo.yml | kubectl apply -f -;
+        $mo zipkin/ingress.mo.yml | kubectl apply -f -;
+        kubectl apply -f zipkin/service.yml;
 
 targets:
   deploy:
@@ -92,4 +92,4 @@ targets:
     - default-backend
     - letsencrypt
     - auth-server
-    - appdash
+    - zipkin
