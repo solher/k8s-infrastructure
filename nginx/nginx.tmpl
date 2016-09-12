@@ -214,12 +214,24 @@ http {
         {{ $path := buildLocation $location }}
         location {{ $path }} {
             auth_request /internalAuth;
-            auth_request_set $payload $upstream_http_auth_server_payload;
-            auth_request_set $session $upstream_http_auth_server_session;
-            auth_request_set $token $upstream_http_auth_server_token;
-            proxy_set_header Auth-Server-Payload $payload;
-            proxy_set_header Auth-Server-Session $session;
-            proxy_set_header Auth-Server-Token $token;
+
+            # Styx session
+            auth_request_set $payload $upstream_http_styx_payload;
+            auth_request_set $session $upstream_http_styx_session;
+            auth_request_set $token $upstream_http_styx_access_token;
+            proxy_set_header Styx-Payload $payload;
+            proxy_set_header Styx-Session $session;
+            proxy_set_header Styx-Access-Token $token;
+
+            # Styx tracing
+            auth_request_set $tracingSampled $upstream_http_x_b3_sampled;
+            auth_request_set $tracingFlags $upstream_http_x_b3_flags;
+            auth_request_set $tracingTraceId $upstream_http_x_b3_traceid;
+            auth_request_set $tracingSpanId $upstream_http_x_b3_spanid;
+            proxy_set_header X-B3-Sampled $tracingSampled;
+            proxy_set_header X-B3-Flags $tracingFlags;
+            proxy_set_header X-B3-Traceid $tracingTraceId;
+            proxy_set_header X-B3-Spanid $tracingSpanId;
 
             {{ if gt (len $location.Whitelist.CIDR) 0 }}
             {{- range $ip := $location.Whitelist.CIDR }}
