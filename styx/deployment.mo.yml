@@ -16,7 +16,7 @@ spec:
         auth: "true"
       containers:
       - name: styx
-        image: solher/styx:latest
+        image: solher/styx:1.0.1
         livenessProbe:
           httpGet:
             path: /healthz
