@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: prometheus-node-exporter
+  namespace: {{NAMESPACE}}
+spec:
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        component: node-exporter
+    spec:
+      containers:
+      - image: prom/node-exporter:0.12.0
+        name: prometheus-node-exporter
+        ports:
+        - name: api
+          containerPort: 9100
+          hostPort: 9100
+      hostNetwork: true
+      hostPID: true

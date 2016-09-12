@@ -2,7 +2,7 @@
 version: 0.4
 
 env:
-  NAMESPACE: 'infrastructure'
+  NAMESPACE: 'default'
   SETUP_MO: 'mo=\"./mo --source=env/\$SUP_NETWORK.env\"'
   MINIKUBE_EXPECTED: '[[ $(kubectl get nodes -o name) == \"node/minikubevm\" ]] || { echo current k8s target is not minikube; exit 1; }' 
   GCE_EXPECTED: '[[ $(kubectl get nodes -o name) != \"node/minikubevm\" ]] || { echo current k8s target is not GCE; exit 1; }' 
@@ -115,6 +115,34 @@ commands:
         $mo zipkin/deployment.mo.yml | kubectl apply -f -;
         $mo zipkin/service.mo.yml | kubectl apply -f -;
 
+  prometheus:
+    desc: Deploy Prometheus.
+    run: >
+      eval $CHECK_CONTEXT; eval $SETUP_MO;
+        $mo prometheus/exporter-daemonset.mo.yml | kubectl apply -f -;
+        $mo prometheus/exporter-service.mo.yml | kubectl apply -f -;
+        $mo prometheus/configmap.mo.yml | kubectl apply -f -;
+        $mo prometheus/deployment.mo.yml | kubectl apply -f -;
+        $mo prometheus/service.mo.yml | kubectl apply -f -;
+        $mo prometheus/pv-claim.mo.yml | kubectl apply -f -;
+
+  grafana:
+    desc: Deploy Grafana.
+    run: >
+      eval $CHECK_CONTEXT; eval $SETUP_MO;
+        kubectl create configmap grafana-dashboards \
+        --from-file=grafana/dashboards/grafana-net-162-dashboard.json \
+        --from-file=grafana/dashboards/grafana-net-193-dashboard.json \
+        --from-file=grafana/dashboards/grafana-net-2-dashboard.json \
+        --from-file=grafana/dashboards/grafana-net-315-dashboard.json \
+        --from-file=grafana/dashboards/prometheus-datasource.json \
+        --dry-run -o yaml | kubectl --namespace=$NAMESPACE apply -f -;
+        $mo grafana/deployment.mo.yml | kubectl apply -f -;
+        $mo grafana/service.mo.yml | kubectl apply -f -;
+        $mo grafana/pv-claim.mo.yml | kubectl apply -f -;
+        $mo grafana/dashboards-job.mo.yml | kubectl delete -f -;        
+        $mo grafana/dashboards-job.mo.yml | kubectl create -f -;        
+
 targets:
   deploy:
     - prepare
@@ -126,3 +154,4 @@ targets:
     - styx-redis
     - styx
     - zipkin
+    - prometheus

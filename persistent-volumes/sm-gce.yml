@@ -25,3 +25,17 @@ spec:
   gcePersistentDisk:
     pdName: "sm1"
     fsType: "ext4"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: sm2
+spec:
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  capacity:
+    storage: 10Gi
+  gcePersistentDisk:
+    pdName: "sm2"
+    fsType: "ext4"

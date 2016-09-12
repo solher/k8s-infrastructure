@@ -1,0 +1,7 @@
+{
+  "name": "prometheus",
+  "type": "prometheus",
+  "url": "http://prometheus:80",
+  "access": "proxy",
+  "basicAuth": false
+}

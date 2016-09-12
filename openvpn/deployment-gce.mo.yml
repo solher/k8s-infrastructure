@@ -38,6 +38,9 @@ spec:
             - containerPort: 1194
               hostPort: 1194
               protocol: UDP
+          resources:
+            limits:
+              memory: 20Mi
           volumeMounts:
             - mountPath: /etc/openvpn/pki
               name: pki

@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: {{NAMESPACE}}
+spec:
+  replicas: {{DEFAULT_REPLICAS}}
+  revisionHistoryLimit: {{DEFAULT_HISTORY_LIMIT}}
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        component: core
+    spec:
+      nodeSelector:
+        infrastructure: "true"
+      containers:
+      - name: prometheus
+        image: prom/prometheus:v1.1.2
+        args:
+          - '-storage.local.retention=6h'
+          - '-storage.local.memory-chunks=300000'
+          - '-storage.local.path=/data'
+          - '-config.file=/etc/prometheus/prometheus.yml'
+        ports:
+        - name: www
+          containerPort: 9090
+        volumeMounts:
+          - name: config
+            mountPath: /etc/prometheus
+            readOnly: true
+          - name: data
+            mountPath: /data
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus
+            items:
+            - key: prometheus.yml
+              path: prometheus.yml
+        - name: data
+          persistentVolumeClaim:
+            claimName: prometheus

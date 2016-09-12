@@ -40,7 +40,7 @@ spec:
           hostPort: 443
         args:
         - /nginx-ingress-controller
-        - --default-backend-service=infrastructure/default-http-backend
+        - --default-backend-service={{NAMESPACE}}/default-http-backend
         volumeMounts:
           - mountPath: /etc/nginx/template
             name: template
