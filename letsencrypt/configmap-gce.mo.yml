@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: kube-lego
-  namespace: infrastructure
+  namespace: {{NAMESPACE}}
   labels:
     app: kube-lego
 data:

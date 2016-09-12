@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: styx-redis
+  namespace: {{NAMESPACE}}
+spec:
+  replicas: {{DEFAULT_REPLICAS}}
+  revisionHistoryLimit: {{DEFAULT_HISTORY_LIMIT}}
+  template:
+    metadata:
+      labels:
+        app: styx
+        component: redis
+    spec:
+      nodeSelector:
+        auth: "true"
+      containers:
+      - name: redis
+        image: redis:3.2-alpine
+        ports:
+          - name: db
+            containerPort: 6379
+        volumeMounts:
+          - mountPath: /data
+            name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: styx-redis

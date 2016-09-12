@@ -1,0 +1,59 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: openvpn
+  namespace: {{NAMESPACE}}
+spec:
+  replicas: 1
+  revisionHistoryLimit: {{DEFAULT_HISTORY_LIMIT}}
+  template:
+    metadata:
+      labels:
+        app: openvpn
+    spec:
+      nodeSelector:
+        proxy: "true"
+      containers:
+        - name: openvpn
+          image: kylemanna/openvpn:2.0.0
+          command: ["/bin/sh","-c"]
+          args: 
+            - |
+              ovpn_genconfig \
+              -u udp://server:1194 \
+              -n {{OPENVPN_K8S_DNS}} \
+              -n 192.168.1.1 \
+              -n 8.8.8.8 \
+              -s 10.8.0.0/24 \
+              -N \
+              -p "route {{OPENVPN_K8S_SERVICE_NETWORK}} 255.255.0.0" \
+              -p "dhcp-option DOMAIN-SEARCH svc.cluster.local" \
+              -p "dhcp-option DOMAIN-SEARCH default.svc.cluster.local";
+              ovpn_run;
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          ports:
+            - containerPort: 1194
+              hostPort: 1194
+              protocol: UDP
+          volumeMounts:
+            - mountPath: /etc/openvpn/pki
+              name: pki
+              readOnly: true
+      volumes:
+        - name: pki
+          secret:
+            secretName: openvpn
+            items:
+            - key: server.key
+              path: private/server.key
+            - key: server.crt
+              path: issued/server.crt
+            - key: ca.crt
+              path: ca.crt
+            - key: dh.pem
+              path: dh.pem
+            - key: ta.key
+              path: ta.key

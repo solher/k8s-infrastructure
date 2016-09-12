@@ -1,10 +1,11 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: auth-server
-  namespace: infrastructure
+  name: styx-redis
+  namespace: {{NAMESPACE}}
   labels:
-    app: auth-server
+    app: styx
+    component: redis
 spec:
   accessModes:
     - ReadWriteOnce

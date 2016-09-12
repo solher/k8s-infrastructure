@@ -36,11 +36,38 @@ commands:
       eval $CHECK_CONTEXT;
         kubectl apply -f persistent-volumes/sm-$SUP_NETWORK.yml;
 
-  dashboard:
-    desc: Deploy the Kubernetes dashboard.
+  openvpn-pki:
+    desc: Init OpenVPN PKI/CA/DH/TA.
+    stdin: true
+    run: >
+      cd openvpn/EasyRSA*;
+        ./easyrsa init-pki; ./easyrsa build-ca nopass; ./easyrsa gen-dh;
+        /usr/local/sbin/openvpn --genkey --secret ta.key;
+
+  openvpn-server:
+    desc: Generate a 'server' OpenVPN server cerfificate.
+    stdin: true
+    run: cd openvpn/EasyRSA*; ./easyrsa build-server-full server nopass
+
+  openvpn-client:
+    desc: Generate a 'client' OpenVPN client cerfificate.
+    run: cd openvpn/EasyRSA*; ./easyrsa build-client-full client nopass
+
+  openvpn:
+    desc: Deploy OpenVPN.
     run: >
       eval $CHECK_CONTEXT; eval $SETUP_MO;
-        $mo dashboard/ingress.mo.yml | kubectl apply -f -;
+        [[ -f openvpn/deployment-$SUP_NETWORK.mo.yml ]] || exit 0;
+        $mo openvpn/deployment-$SUP_NETWORK.mo.yml | kubectl apply -f -;
+        [[ -d openvpn/pki-$SUP_NETWORK ]] || exit 0;
+        cd openvpn/pki-$SUP_NETWORK/server;
+        kubectl --namespace=$NAMESPACE delete secret openvpn; 
+        kubectl --namespace=$NAMESPACE create secret generic openvpn \
+        --from-file=ca.crt \
+        --from-file=dh.pem \
+        --from-file=ta.key \
+        --from-file=server.crt \
+        --from-file=server.key;
 
   nginx:
     desc: Deploy Nginx.
@@ -54,7 +81,7 @@ commands:
     run: >
       eval $CHECK_CONTEXT; eval $SETUP_MO;
         $mo default-backend/deployment.mo.yml | kubectl apply -f -;
-        kubectl apply -f default-backend/service.yml;
+        $mo default-backend/service.mo.yml | kubectl apply -f -;
 
   letsencrypt:
     desc: Deploy Letsencrypt.
@@ -65,31 +92,37 @@ commands:
         [[ -f letsencrypt/deployment-$SUP_NETWORK.mo.yml ]] || exit 0;
         $mo letsencrypt/deployment-$SUP_NETWORK.mo.yml | kubectl apply -f -;
 
-  auth-server:
-    desc: Deploy the auth server.
+  styx-redis:
+    desc: Deploy the Styx Redis server.
     run: >
       eval $CHECK_CONTEXT; eval $SETUP_MO;
-        kubectl apply -f auth-server/configmap.yml;
-        $mo auth-server/deployment.mo.yml | kubectl apply -f -;
-        $mo auth-server/ingress.mo.yml | kubectl apply -f -;
-        kubectl apply -f auth-server/pv-claim.yml;
-        kubectl apply -f auth-server/service.yml;
+        $mo styx-redis/deployment.mo.yml | kubectl apply -f -;
+        $mo styx-redis/pv-claim.mo.yml | kubectl apply -f -;
+        $mo styx-redis/service.mo.yml | kubectl apply -f -;
+
+  styx:
+    desc: Deploy the Styx server.
+    run: >
+      eval $CHECK_CONTEXT; eval $SETUP_MO;
+        $mo styx/configmap.mo.yml | kubectl apply -f -;
+        $mo styx/deployment.mo.yml | kubectl apply -f -;
+        $mo styx/service.mo.yml | kubectl apply -f -;
 
   zipkin:
     desc: Deploy Zipkin.
     run: >
       eval $CHECK_CONTEXT; eval $SETUP_MO;
         $mo zipkin/deployment.mo.yml | kubectl apply -f -;
-        $mo zipkin/ingress.mo.yml | kubectl apply -f -;
-        kubectl apply -f zipkin/service.yml;
+        $mo zipkin/service.mo.yml | kubectl apply -f -;
 
 targets:
   deploy:
     - prepare
     - volumes
-    - dashboard
+    - openvpn
     - nginx
     - default-backend
     - letsencrypt
-    - auth-server
+    - styx-redis
+    - styx
     - zipkin

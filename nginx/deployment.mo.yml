@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: nginx
-  namespace: infrastructure
+  namespace: {{NAMESPACE}}
 spec:
   replicas: 1
   revisionHistoryLimit: {{DEFAULT_HISTORY_LIMIT}}
@@ -38,9 +38,6 @@ spec:
           hostPort: 80
         - containerPort: 443
           hostPort: 443
-        resources:
-          limits:
-            memory: 100Mi
         args:
         - /nginx-ingress-controller
         - --default-backend-service=infrastructure/default-http-backend

@@ -2,9 +2,9 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: zipkin
-  namespace: infrastructure
+  namespace: {{NAMESPACE}}
 spec:
-  replicas: 1
+  replicas: {{DEFAULT_REPLICAS}}
   revisionHistoryLimit: {{DEFAULT_HISTORY_LIMIT}}
   template:
     metadata:

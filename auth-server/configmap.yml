@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: auth-server
-  namespace: infrastructure
-  labels:
-    app: auth-server
-data:
-  auth-server.grant-all: "true"

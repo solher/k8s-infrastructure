@@ -1,0 +1,49 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: styx
+  namespace: {{NAMESPACE}}
+spec:
+  replicas: {{DEFAULT_REPLICAS}}
+  revisionHistoryLimit: {{DEFAULT_HISTORY_LIMIT}}
+  template:
+    metadata:
+      labels:
+        app: styx
+        component: core
+    spec:
+      nodeSelector:
+        auth: "true"
+      containers:
+      - name: styx
+        image: solher/styx:latest
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        ports:
+          - name: debug
+            containerPort: 8080
+          - name: http
+            containerPort: 8081
+          - name: grpc
+            containerPort: 8082
+        env:
+          - name: ZIPKIN_ADDR
+            value: zipkin.{{NAMESPACE}}:9410
+          - name: REDIS_ADDR
+            value: styx-redis.{{NAMESPACE}}:6379
+        volumeMounts:
+          - mountPath: /app
+            name: config
+            readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: styx
+            items:
+            - key: config.yml
+              path: config.yml

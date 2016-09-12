@@ -198,7 +198,7 @@ http {
 
         location = /internalAuth {
         internal;
-        proxy_pass http://auth-server.infrastructure:3000/auth;
+        proxy_pass http://styx.infrastructure:8081/auth/authorizeToken;
         proxy_set_header Request-Url $scheme://$http_host$request_uri;
         }
 
@@ -206,7 +206,7 @@ http {
 
         location /internalRedirect {
         internal;
-        proxy_pass http://auth-server.infrastructure:3000/redirect;
+        proxy_pass http://styx.infrastructure:8081/auth/redirect;
         proxy_set_header Request-Url $scheme://$http_host$request_uri;
         }
 
