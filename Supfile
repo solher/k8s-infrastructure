@@ -34,6 +34,7 @@ commands:
     desc: Deploy persistent volumes.
     run: >
       eval $CHECK_CONTEXT;
+        [[ -f persistent-volumes/sm-$SUP_NETWORK.mo.yml ]] || exit 0;
         kubectl apply -f persistent-volumes/sm-$SUP_NETWORK.yml;
 
   openvpn-pki:
@@ -155,3 +156,4 @@ targets:
     - styx
     - zipkin
     - prometheus
+    - grafana

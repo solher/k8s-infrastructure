@@ -16,6 +16,13 @@ spec:
       containers:
       - name: zipkin
         image: openzipkin/zipkin:1.8.1
+        livenessProbe:
+          httpGet:
+            path: /api/v1/services
+            port: 9411
+            scheme: HTTP
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
         ports:
           - name: www
             containerPort: 9411
@@ -27,3 +34,6 @@ spec:
         resources:
           limits:
             memory: 200Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi

@@ -17,6 +17,10 @@ spec:
       containers:
       - name: styx
         image: solher/styx:1.0.1
+        resources:
+          requests:
+            cpu: 10m
+            memory: 10Mi
         livenessProbe:
           httpGet:
             path: /healthz

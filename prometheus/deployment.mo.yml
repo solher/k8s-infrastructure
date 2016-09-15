@@ -22,6 +22,10 @@ spec:
           - '-storage.local.memory-chunks=300000'
           - '-storage.local.path=/data'
           - '-config.file=/etc/prometheus/prometheus.yml'
+        resources:
+          requests:
+            cpu: 10m
+            memory: 10Mi
         ports:
         - name: www
           containerPort: 9090

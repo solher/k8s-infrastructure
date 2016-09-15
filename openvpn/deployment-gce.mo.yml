@@ -26,21 +26,22 @@ spec:
               -n 8.8.8.8 \
               -s 10.8.0.0/24 \
               -N \
-              -p "route {{OPENVPN_K8S_SERVICE_NETWORK}} 255.255.0.0" \
-              -p "dhcp-option DOMAIN-SEARCH svc.cluster.local" \
-              -p "dhcp-option DOMAIN-SEARCH default.svc.cluster.local";
+              -p "route {{OPENVPN_K8S_SERVICE_NETWORK}} {{OPENVPN_K8S_SERVICE_NETMASK}}" \
+              -p "dhcp-option DOMAIN-SEARCH default.svc.cluster.local" \
+              -p "dhcp-option DOMAIN-SEARCH kube-system.svc.cluster.local";
               ovpn_run;
           securityContext:
             capabilities:
               add:
                 - NET_ADMIN
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
           ports:
             - containerPort: 1194
               hostPort: 1194
               protocol: UDP
-          resources:
-            limits:
-              memory: 20Mi
           volumeMounts:
             - mountPath: /etc/openvpn/pki
               name: pki

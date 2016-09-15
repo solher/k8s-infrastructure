@@ -17,6 +17,10 @@ spec:
       - image: gcr.io/google_containers/nginx-ingress-controller:0.8.2
         name: nginx
         imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 10m
+            memory: 10Mi
         env:
           - name: POD_NAME
             valueFrom:

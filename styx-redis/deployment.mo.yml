@@ -17,6 +17,10 @@ spec:
       containers:
       - name: redis
         image: redis:3.2-alpine
+        resources:
+          requests:
+            cpu: 10m
+            memory: 10Mi
         ports:
           - name: db
             containerPort: 6379

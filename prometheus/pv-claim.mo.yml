@@ -1,6 +1,8 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
+  annotations:
+    volume.alpha.kubernetes.io/storage-class: ""
   name: prometheus
   namespace: {{NAMESPACE}}
   labels:
