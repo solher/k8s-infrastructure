@@ -10,6 +10,7 @@ spec:
         app: grafana
         component: dashboards
     spec:
+      restartPolicy: Never
       containers:
       - name: grafana-dashboards
         image: docker
@@ -45,7 +46,6 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /opt/grafana-dashboards
-      restartPolicy: Never
       volumes:
       - name: config
         configMap:

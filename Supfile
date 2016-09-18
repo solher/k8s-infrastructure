@@ -4,8 +4,8 @@ version: 0.4
 env:
   NAMESPACE: 'default'
   SETUP_MO: 'mo=\"./mo --source=env/\$SUP_NETWORK.env\"'
-  MINIKUBE_EXPECTED: '[[ $(kubectl get nodes -o name) == \"node/minikubevm\" ]] || { echo current k8s target is not minikube; exit 1; }' 
-  GCE_EXPECTED: '[[ $(kubectl get nodes -o name) != \"node/minikubevm\" ]] || { echo current k8s target is not GCE; exit 1; }' 
+  MINIKUBE_EXPECTED: '[[ $(kubectl get nodes -o name) == *\"minikube\"* ]] || { echo current k8s target is not minikube; exit 1; }' 
+  GCE_EXPECTED: '[[ $(kubectl get nodes -o name) != *\"minikube\"* ]] || { echo current k8s target is not GCE; exit 1; }' 
   APPLY_NAMESPACE: 'echo ''{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"name\":\"''\$NAMESPACE''\"}}'' | kubectl apply -f -'
 
 networks:
@@ -16,7 +16,7 @@ networks:
       CHECK_CONTEXT: $MINIKUBE_EXPECTED 
       PREPARE: '
         $APPLY_NAMESPACE;
-        kubectl label nodes minikubevm proxy=true infrastructure=true auth=true minikube=true --overwrite;
+        kubectl label nodes minikube proxy=true infrastructure=true auth=true minikube=true --overwrite;
       '
   gce:
     hosts:
@@ -29,13 +29,6 @@ commands:
   prepare:
     desc: Prepare the environment.
     run: eval $CHECK_CONTEXT; eval $PREPARE
-
-  volumes:
-    desc: Deploy persistent volumes.
-    run: >
-      eval $CHECK_CONTEXT;
-        [[ -f persistent-volumes/sm-$SUP_NETWORK.mo.yml ]] || exit 0;
-        kubectl apply -f persistent-volumes/sm-$SUP_NETWORK.yml;
 
   openvpn-pki:
     desc: Init OpenVPN PKI/CA/DH/TA.
@@ -147,7 +140,6 @@ commands:
 targets:
   deploy:
     - prepare
-    - volumes
     - openvpn
     - nginx
     - default-backend

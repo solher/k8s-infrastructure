@@ -39,7 +39,7 @@ spec:
           containerPort: 3000
         volumeMounts:
         - name: data
-          mountPath: /var
+          mountPath: /var/lib/grafana
       volumes:
         - name: data
           persistentVolumeClaim:
