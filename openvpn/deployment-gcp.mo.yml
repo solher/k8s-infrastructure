@@ -11,8 +11,6 @@ spec:
       labels:
         app: openvpn
     spec:
-      nodeSelector:
-        proxy: "true"
       containers:
         - name: openvpn
           image: kylemanna/openvpn:2.0.0

@@ -11,8 +11,6 @@ spec:
       labels:
         app: kube-lego
     spec:
-      nodeSelector:
-        infrastructure: "true"
       containers:
       - name: kube-lego
         image: jetstack/kube-lego:0.1.2

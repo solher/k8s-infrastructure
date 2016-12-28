@@ -11,8 +11,6 @@ spec:
       labels:
         app: nginx
     spec:
-      nodeSelector:
-        proxy: "true"
       containers:
       - image: gcr.io/google_containers/nginx-ingress-controller:0.8.2
         name: nginx
@@ -45,14 +43,14 @@ spec:
         args:
         - /nginx-ingress-controller
         - --default-backend-service={{NAMESPACE}}/default-http-backend
-        volumeMounts:
-          - mountPath: /etc/nginx/template
-            name: template
-            readOnly: true
-      volumes:
-        - name: template
-          configMap:
-            name: nginx
-            items:
-            - key: nginx.tmpl
-              path: nginx.tmpl
+      #   volumeMounts:
+      #     - mountPath: /etc/nginx/template
+      #       name: template
+      #       readOnly: true
+      # volumes:
+      #   - name: template
+      #     configMap:
+      #       name: nginx
+      #       items:
+      #       - key: nginx.tmpl
+      #         path: nginx.tmpl

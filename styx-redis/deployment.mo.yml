@@ -12,8 +12,6 @@ spec:
         app: styx
         component: redis
     spec:
-      nodeSelector:
-        auth: "true"
       containers:
       - name: redis
         image: redis:3.2-alpine

@@ -11,8 +11,6 @@ spec:
       labels:
         app: zipkin
     spec:
-      nodeSelector:
-        infrastructure: "true"
       containers:
       - name: zipkin
         image: openzipkin/zipkin:1.8.1

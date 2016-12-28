@@ -12,8 +12,6 @@ spec:
         app: prometheus
         component: core
     spec:
-      nodeSelector:
-        infrastructure: "true"
       containers:
       - name: prometheus
         image: prom/prometheus:v1.1.2

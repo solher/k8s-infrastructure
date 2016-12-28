@@ -3,10 +3,9 @@ version: 0.4
 
 env:
   NAMESPACE: 'default'
-  SETUP_MO: 'mo=\"./mo --source=env/\$SUP_NETWORK.env\"'
+  SETUP_MO: '''mo=\"./mo --source=env/\$SUP_NETWORK.env\"'''
   MINIKUBE_EXPECTED: '[[ $(kubectl get nodes -o name) == *\"minikube\"* ]] || { echo current k8s target is not minikube; exit 1; }' 
-  GCE_EXPECTED: '[[ $(kubectl get nodes -o name) != *\"minikube\"* ]] || { echo current k8s target is not GCE; exit 1; }' 
-  APPLY_NAMESPACE: 'echo ''{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"name\":\"''\$NAMESPACE''\"}}'' | kubectl apply -f -'
+  GCP_EXPECTED: '[[ $(kubectl get nodes -o name) != *\"minikube\"* ]] || { echo current k8s target is not GCP; exit 1; }' 
 
 networks:
   minikube:
@@ -14,16 +13,13 @@ networks:
       - localhost
     env: 
       CHECK_CONTEXT: $MINIKUBE_EXPECTED 
-      PREPARE: '
-        $APPLY_NAMESPACE;
-        kubectl label nodes minikube proxy=true infrastructure=true auth=true minikube=true --overwrite;
-      '
-  gce:
+      PREPARE: ''
+  gcp:
     hosts:
       - localhost
     env: 
-      CHECK_CONTEXT: $GCE_EXPECTED 
-      PREPARE: $APPLY_NAMESPACE
+      CHECK_CONTEXT: $GCP_EXPECTED 
+      PREPARE: ''
 
 commands:
   prepare:

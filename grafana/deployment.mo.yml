@@ -11,8 +11,6 @@ spec:
       labels:
         app: grafana
     spec:
-      nodeSelector:
-        infrastructure: "true"
       containers:
       - name: grafana
         image: grafana/grafana:3.1.1
